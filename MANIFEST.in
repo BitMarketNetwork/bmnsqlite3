@@ -1,0 +1,7 @@
+include CHANGELOG.md
+recursive-include 3rdparty *.c *.h
+recursive-include src *.c *.h
+
+# tests
+include tox.ini
+recursive-include tests *.py

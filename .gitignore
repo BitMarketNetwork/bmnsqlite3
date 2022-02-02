@@ -1,0 +1,36 @@
+.DS_Store
+__pycache__
+/build
+/dist
+/.tox
+/.idea
+/*.egg-info
+/bmnsqlite3-*.*.*
+
+*.so
+
+# private
+.pypirc
+
+# TODO
+/tests/tmp
+/.vscode
+/.vs
+**/lib*
+*.obj
+*.pyd
+*.exp
+*.lib
+/_dev
+*.db*
+# unix
+*.o
+*.sql
+*.log
+*.tmp
+
+# from origin tests
+@test*
+
+# venv
+*.env*
