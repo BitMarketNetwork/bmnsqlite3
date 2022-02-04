@@ -68,7 +68,6 @@ DATETIME = Timestamp
 # This type object is used to describe the "Row ID" column in a database.
 ROWID = int
 
-
 # from original sqlite3 package
 version_info = tuple(int(x) for x in version.split("."))
 sqlite_version_info = tuple(int(x) for x in sqlite_version.split("."))

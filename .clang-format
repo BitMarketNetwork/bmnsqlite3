@@ -1,0 +1,182 @@
+# BMN
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+
+DisableFormat: false
+
+
+Language: Cpp
+Standard: c++17
+
+ContinuationIndentWidth: 8
+IndentWidth: 4
+PPIndentWidth: 4
+IndentPPDirectives: AfterHash
+TabWidth: 4
+ColumnLimit: 80
+MaxEmptyLinesToKeep: 1
+
+UseCRLF: false
+DeriveLineEnding: false
+UseTab: Never
+
+AlignEscapedNewlines: DontAlign
+
+# operators
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: true
+SpaceBeforeAssignmentOperators: true
+SpaceAfterLogicalNot: false
+
+# pointers / references
+DerivePointerAlignment: false
+PointerAlignment: Left
+SpaceAroundPointerQualifiers: Before
+ReferenceAlignment: Left
+
+# labels
+IndentGotoLabels: false
+
+# qualifier
+# QualifierAlignment: Custom
+# QualifierOrder: ['inline', 'static' , 'constexpr', 'const', 'type']
+
+# brakes / parentheses / containers
+Cpp11BracedListStyle: true
+SpaceBeforeCpp11BracedList: true
+
+AlignAfterOpenBracket: AlwaysBreak
+SpacesInSquareBrackets: false
+SpacesInParentheses: false
+SpaceBeforeParens: Never
+SpaceBeforeSquareBrackets: false
+SpacesInContainerLiterals: false
+SpaceInEmptyParentheses: false
+InsertTrailingCommas: Wrapped
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: true
+  AfterClass: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: false
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: false
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: true
+  BeforeWhile: true
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+
+# consecutive
+AlignConsecutiveAssignments: AcrossComments
+AlignConsecutiveDeclarations: None
+AlignConsecutiveMacros: AcrossComments
+AlignOperands: DontAlign
+
+# c style cast
+SpaceAfterCStyleCast: false
+SpacesInCStyleCastParentheses: false
+
+# preprocessor
+SortIncludes: Never
+IncludeBlocks: Preserve
+IncludeIsMainRegex: ''
+IncludeIsMainSourceRegex: ''
+MacroBlockBegin: ''
+MacroBlockEnd: ''
+
+# control statements
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+SpaceBeforeRangeBasedForLoopColon: false
+SpacesInConditionalStatement: false
+
+# functions
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortFunctionsOnASingleLine: None
+AlwaysBreakAfterReturnType: None
+BinPackArguments: false
+BinPackParameters: false
+IndentWrappedFunctionNames: false
+AllowAllArgumentsOnNextLine: false
+
+# lambadas
+AllowShortLambdasOnASingleLine: Empty
+# LambdaBodyIndentation: Signature
+
+# templates
+AlwaysBreakTemplateDeclarations: Yes
+SpaceAfterTemplateKeyword: false
+IndentRequires: false
+BreakBeforeConceptDeclarations: true
+SpacesInAngles: Never
+
+# namespaces
+FixNamespaceComments: false
+CompactNamespaces: true
+NamespaceIndentation: Inner
+ShortNamespaceLines: 1
+SortUsingDeclarations: true
+
+# classes/structures
+AccessModifierOffset: -4
+ConstructorInitializerIndentWidth: 4
+ConstructorInitializerAllOnOneLineOrOnePerLine: true  # deprecated
+PackConstructorInitializers: Never
+SpaceBeforeCtorInitializerColon: false
+BreakConstructorInitializers: AfterColon
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: LogicalBlock
+IndentAccessModifiers: false
+BreakInheritanceList: AfterColon
+AlignArrayOfStructures: None
+SpaceBeforeInheritanceColon: false
+
+# enums
+AllowShortEnumsOnASingleLine: true
+
+# cases
+IndentCaseBlocks: true
+IndentCaseLabels: false
+SpaceBeforeCaseColon: false
+AllowShortCaseLabelsOnASingleLine: false
+
+# blocks
+AllowShortBlocksOnASingleLine: Always
+KeepEmptyLinesAtTheStartOfBlocks: false
+SpaceInEmptyBlock: false
+IndentExternBlock: Indent
+
+# bitfields
+BitFieldColonSpacing: None
+AlignConsecutiveBitFields: None
+
+# strings
+AlwaysBreakBeforeMultilineStrings: true
+BreakStringLiterals: false
+
+# comments
+AlignTrailingComments: true
+SpacesBeforeTrailingComments: 1
+ReflowComments: true
+SpacesInLineCommentPrefix:
+  Minimum: 1
+  Maximum: 1
+
+# penalties
+PenaltyBreakAssignment: 100
+# PenaltyBreakBeforeFirstCallParameter:
+# PenaltyBreakComment:
+# PenaltyBreakFirstLessLess:
+# PenaltyBreakOpenParenthesis:
+# PenaltyBreakString:
+# PenaltyBreakTemplateDeclaration:
+# PenaltyExcessCharacter: 10
+# PenaltyIndentedWhitespace:
+PenaltyReturnTypeOnItsOwnLine: 10000

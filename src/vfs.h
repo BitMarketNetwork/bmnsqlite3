@@ -10,7 +10,6 @@
 #include <Python.h>
 #include "utils.h"
 
-
 /*
 returns 0 un success and other value on errors
 */

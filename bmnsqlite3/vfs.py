@@ -83,9 +83,9 @@ class IVfsWrapper(abc.ABC):
             Optional[str]: Full path name or None to choose default behaviour
         """
 
-    def random(self, size: int) -> Optional[bytes]: 
+    def random(self, size: int) -> Optional[bytes]:
         """
-        Method should return 'size' bytes of good-quality randomness 
+        Method should return 'size' bytes of good-quality randomness
 
         Args:
             size (int): Count of bytes to return
@@ -94,7 +94,7 @@ class IVfsWrapper(abc.ABC):
             Optional[int]: 'size' bytes of good-quality randomness or None to choose default behaviour
         """
 
-    def current_time(self) -> Optional[float]: 
+    def current_time(self) -> Optional[float]:
         """
         Method  returns a current time
 
@@ -102,7 +102,7 @@ class IVfsWrapper(abc.ABC):
             Optional[float]: Julian Day Number for the current date and time as a floating point value or None to choose default behaviour
         """
 
-    def current_time_int64(self) -> Optional[int]: 
+    def current_time_int64(self) -> Optional[int]:
         """
         Method  returns a current time
 
@@ -117,9 +117,10 @@ class IVfsWrapper(abc.ABC):
 
         Args:
             path (str): file path to delete
-            sync_dir (bool): 
+            sync_dir (bool):
         """
         raise NotImplementedError
+
 
 class IFullVfsWrapper(IVfsWrapper):
 
@@ -177,7 +178,7 @@ class IFullVfsWrapper(IVfsWrapper):
         """
 
     @abc.abstractmethod
-    def write(self, fh: Any, data: bytearray, offset: int) -> None: 
+    def write(self, fh: Any, data: bytearray, offset: int) -> None:
         """
         This method must be implemented if 'open' method also implemented.
         It used to write data to file system or any another storage
@@ -208,7 +209,7 @@ class IFullVfsWrapper(IVfsWrapper):
         """
 
     @abc.abstractmethod
-    def truncate(self, fh: Any, size: int) -> None: 
+    def truncate(self, fh: Any, size: int) -> None:
         """
         Method truncates file to 'size'
 
@@ -218,7 +219,7 @@ class IFullVfsWrapper(IVfsWrapper):
         """
 
     @abc.abstractmethod
-    def file_size(self, fh: Any) -> int: 
+    def file_size(self, fh: Any) -> int:
         """
         Returns file size
 
@@ -265,11 +266,11 @@ class IFullVfsWrapper(IVfsWrapper):
         """
 
         Args:
-            fh (Any): 
-            flags (int): 
+            fh (Any):
+            flags (int):
 
         Returns:
-            [type]: 
+            [type]:
         """
 
     def file_control(self, fh: Any, operation: int, argument: Any) -> bool:
@@ -282,9 +283,10 @@ class IFullVfsWrapper(IVfsWrapper):
             argument (Any): Variant argument depening on operation
 
         Returns:
-            bool: Return True to change default beahavior depending on operation. 
+            bool: Return True to change default beahavior depending on operation.
                 False is default
         """
+
 
 class IPartialVfsWrapper(IVfsWrapper):
     """ There are two approaches to implement wrapper: full and partial.
