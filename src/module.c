@@ -1,3 +1,4 @@
+#include "module.h"
 
 #include "debug.h"
 #include "sqlite3.h"
@@ -7,10 +8,6 @@ extern PyMODINIT_FUNC PyInit__sqlite3(void);
 extern PyObject* pysqlite_DatabaseError;
 PyObject* pysqlite_WrapperError   = NULL;
 PyObject* pysqlite_WrapperWarning = NULL;
-
-/*
- bmn code
-*/
 
 static PyObject* module_vfs_register(
         PyObject* self,

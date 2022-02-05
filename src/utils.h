@@ -24,7 +24,7 @@
 #endif
 
 /*
-hahdle short read with Bool or None
+handle short read with Bool or None
 */
 #ifndef BMN_MARK_SHORT_READ_WITH_BOOL
 #    define BMN_MARK_SHORT_READ_WITH_BOOL 1
@@ -38,7 +38,7 @@ hahdle short read with Bool or None
 #endif
 
 /*
-    Allow to implement xSleep in python code
+    Allow implementing xSleep in python code
 
     There is no use to implement it in python, but it could lead to
     hard debugging cases
@@ -71,11 +71,11 @@ hahdle short read with Bool or None
 #endif
 
 /*
-  memory macroses
+  memory macros
   make it abstract in case to change it easily
   toggle sqlite3 / python
 
-  also we going to add leaks-debugging set of macroses
+  also we going to add leaks-debugging set of macros
 */
 
 #ifndef BMN_MEM_SQLITE_BACKEND
@@ -161,19 +161,27 @@ hahdle short read with Bool or None
 #endif
 
 #define RAISE_ERROR(EXC, OBJ, ...) \
-    BMN_ERROR(__VA_ARGS__); \
-    PyErr_Format((EXC), __VA_ARGS__); \
-    if(OBJ) \
+    do \
     { \
-        PyErr_WriteUnraisable((OBJ)); \
-    }
+        BMN_ERROR(__VA_ARGS__); \
+        PyErr_Format((EXC), __VA_ARGS__); \
+        if(OBJ) \
+        { \
+            PyErr_WriteUnraisable((OBJ)); \
+        } \
+    } \
+    while(0)
 
 #define RAISE_TYPE_ERROR(OBJ, ...) \
     RAISE_ERROR(PyExc_TypeError, (OBJ), __VA_ARGS__)
 
 #define RAISE_VALUE_ERROR(OBJ, METH, ...) \
-    RAISE_ERROR(PyExc_ValueError, (OBJ), __VA_ARGS__) \
-    saveLocation((OBJ), (METH))
+    do \
+    { \
+        RAISE_ERROR(PyExc_ValueError, (OBJ), __VA_ARGS__); \
+        saveLocation((OBJ), (METH)); \
+    } \
+    while(0)
 
 #define RAISE_OVERFLOW_ERROR(OBJ, ...) \
     RAISE_ERROR(PyExc_OverflowError, (OBJ), __VA_ARGS__)

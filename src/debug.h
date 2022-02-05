@@ -90,8 +90,6 @@ int bmnPrintErrCode(
         bmnPrintf(__FILE__, __LINE__, __FUNCTION_NAME__, 0, #X ": %d", (X))
 #    define BMN_TRACE_STR(X) \
         bmnPrintf(__FILE__, __LINE__, __FUNCTION_NAME__, 0, #X ": %s", (X))
-#    define BMN_TRACE_INT64(X) \
-        bmnPrintf(__FILE__, __LINE__, __FUNCTION_NAME__, 0, #X ": %lld", (X))
 #    define BMN_TRACE_P(X) \
         bmnPrintf( \
                 __FILE__, \
@@ -135,52 +133,67 @@ int bmnPrintErrCode(
 #    endif
 
 #    define BMN_ASSERT_XY(X, M, M1) \
-        if(!(X)) \
+        do \
         { \
-            BMN_ERROR( \
-                    "Assertion at (%s[%d]): %s => '%s' & '%s'", \
-                    __FUNCTION_NAME__, \
-                    __LINE__, \
-                    #X, \
-                    (M), \
-                    (M1)); \
-            abort(); \
-        }
+            if(!(X)) \
+            { \
+                BMN_ERROR( \
+                        "Assertion at (%s[%d]): %s => '%s' & '%s'", \
+                        __FUNCTION_NAME__, \
+                        __LINE__, \
+                        #X, \
+                        (M), \
+                        (M1)); \
+                abort(); \
+            } \
+        } \
+        while(0)
 
 #    define BMN_ASSERT_X(X, M) \
-        if(!(X)) \
+        do \
         { \
-            BMN_ERROR( \
-                    "Assertion at (%s[%d]): %s => '%s'", \
-                    __FUNCTION_NAME__, \
-                    __LINE__, \
-                    #X, \
-                    (M)); \
-            abort(); \
-        }
+            if(!(X)) \
+            { \
+                BMN_ERROR( \
+                        "Assertion at (%s[%d]): %s => '%s'", \
+                        __FUNCTION_NAME__, \
+                        __LINE__, \
+                        #X, \
+                        (M)); \
+                abort(); \
+            } \
+        } \
+        while(0)
 
 #    define BMN_ASSERT(X) \
-        if(!(X)) \
+        do \
         { \
-            BMN_ERROR( \
-                    "Assertion at (%s[%d]): %s", \
-                    __FUNCTION_NAME__, \
-                    __LINE__, \
-                    #X); \
-            abort(); \
-        }
-
+            if(!(X)) \
+            { \
+                BMN_ERROR( \
+                        "Assertion at (%s[%d]): %s", \
+                        __FUNCTION_NAME__, \
+                        __LINE__, \
+                        #X); \
+                abort(); \
+            } \
+        } \
+        while(0)
 #    define BMN_ASSERT_EQUAL(X, Y) \
-        if((X) != (Y)) \
+        do \
         { \
-            BMN_ERROR( \
-                    "Not equal assertion at (%s[%d])!! %d != %d", \
-                    __FUNCTION_NAME__, \
-                    __LINE__, \
-                    X, \
-                    Y); \
-            abort(); \
-        }
+            if((X) != (Y)) \
+            { \
+                BMN_ERROR( \
+                        "Not equal assertion at (%s[%d])!! %d != %d", \
+                        __FUNCTION_NAME__, \
+                        __LINE__, \
+                        X, \
+                        Y); \
+                abort(); \
+            } \
+        } \
+        while(0)
 
 #    define BMN_TRACE_ERROR(rc) \
         bmnPrintErrCode(rc, __FILE__, __LINE__, __FUNCTION_NAME__)

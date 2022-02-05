@@ -159,7 +159,7 @@ AlignConsecutiveBitFields: None
 
 # strings
 AlwaysBreakBeforeMultilineStrings: true
-BreakStringLiterals: false
+BreakStringLiterals: true
 
 # comments
 AlignTrailingComments: true

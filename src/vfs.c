@@ -46,7 +46,6 @@ static void bmnvfsShmBarrier(sqlite3_file*);
 static int bmnvfsShmUnmap(sqlite3_file*, int);
 static int bmnvfsFetch(sqlite3_file*, sqlite3_int64, int, void**);
 static int bmnvfsUnfetch(sqlite3_file*, sqlite3_int64, void*);
-static int bmnvfsShmLock(sqlite3_file*, int, int, int);
 // Method declarations for bmnvfs_vfs.
 static int bmnvfsOpen(sqlite3_vfs*, const char*, sqlite3_file*, int, int*);
 static int bmnvfsDelete(sqlite3_vfs*, const char* zName, int syncDir);
@@ -70,10 +69,13 @@ static const char* bmnvfsNextSystemCall(sqlite3_vfs*, const char* zName);
 #ifndef NDEBUG
 static const char* fileName(const char* z)
 {
-    int i;
-    if(z == 0)
+    size_t i;
+    if(z == NULL)
+    {
         return 0;
-    i = (int)strlen(z) - 1;
+    }
+
+    i = strlen(z) - 1;
     while(i > 0 && z[i - 1] != '/')
     {
         i--;
@@ -81,7 +83,7 @@ static const char* fileName(const char* z)
     return &z[i];
 }
 #endif
-// Open an bmnvfs file handle.
+// Open a bmnvfs file handle.
 static int bmnvfsOpen(
         sqlite3_vfs* pVfs,
         const char* zName,
@@ -96,7 +98,7 @@ static int bmnvfsOpen(
     sqlite3_io_methods* pNewSet;
 
     // TODO: not sure
-    if(zName == 0)
+    if(zName == NULL)
     {
         return SQLITE_IOERR;
     }
@@ -387,7 +389,7 @@ static int bmnvfsRandomness(sqlite3_vfs* pVfs, int nByte, char* zOut)
     return rc;
 }
 
-static int bmnvfsSleep(sqlite3_vfs* pVfs, int nMicro)
+static int bmnvfsSleep(sqlite3_vfs* pVfs, int microseconds)
 {
     BmnvfsInfo* pInfo = BMN_INFO(pVfs);
 #if BMN_OVERRIDE_SLEEP
@@ -410,7 +412,7 @@ static int bmnvfsSleep(sqlite3_vfs* pVfs, int nMicro)
     }
     return rc;
 #endif
-    return pInfo->pRootVfs->xSleep(pInfo->pRootVfs, nMicro);
+    return pInfo->pRootVfs->xSleep(pInfo->pRootVfs, microseconds);
 }
 
 static int bmnvfsGetLastError(sqlite3_vfs* pVfs, int nBuf, char* zBuf)
@@ -588,11 +590,11 @@ static int bmnvfsTruncate(sqlite3_file* pFile, sqlite3_int64 size)
     if(pBmnFile->pFileWrapper)
     {
         rc = callFileTruncateMethod(pBmnFile->pInfo->pWrapper, pBmnFile, size);
-        if(BMN_CB_RESULT_NO_HANDLER == rc)
+        if(rc == BMN_CB_RESULT_NO_HANDLER)
         {
             rc = BMN_CALLBACK_ERROR;
         }
-        else if(BMN_CB_RESULT_HANDLER_LOGIC_ERROR == rc)
+        else if(rc == BMN_CB_RESULT_HANDLER_LOGIC_ERROR)
         {
             rc = BMN_CALLBACK_ERROR;
         }

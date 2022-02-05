@@ -14,27 +14,46 @@
 #define EMIT_RESULT_IGNORED_WARNING(METH) \
     EMIT_WRAPPER_WARNING_FMT("Result of calling '%s' is ignored", (METH))
 #define RAISE_NONE_RETURNED(OBJ, METH) \
-    saveLocation((OBJ), (METH)); \
-    RAISE_TYPE_ERROR((OBJ), "Method '%s' returned None", (METH))
-#define RAISE_WRONG_RETURN_TYPE(OBJ, METH) \
-    saveLocation((OBJ), (METH)); \
-    RAISE_TYPE_ERROR((OBJ), "Unexpected return type from '%s' method ", (METH))
-#define RAISE_NO_MANDATORY_METHOD(OBJ, METH) \
-    saveLocation((OBJ), (METH)); \
-    RAISE_NAME_ERROR((OBJ), "No mandatory method '%s' found", (METH))
-#define CHECK_OUT_OF_RANGE(N, METH) \
-    if((N) < 0 || (N) > INT_MAX) \
+    do \
     { \
-        RAISE_OVERFLOW_ERROR( \
-                pObject, \
-                "Method '%s' returned out of range number", \
-                (METH)); \
-        rc = BMN_CB_RESULT_UNEXPECTED_RETURNS; \
+        saveLocation((OBJ), (METH)); \
+        RAISE_TYPE_ERROR((OBJ), "Method '%s' returned None", (METH)); \
     } \
-    else \
+    while(0)
+#define RAISE_WRONG_RETURN_TYPE(OBJ, METH) \
+    do \
     { \
-        rc = (int)(N); \
-    }
+        saveLocation((OBJ), (METH)); \
+        RAISE_TYPE_ERROR( \
+                (OBJ), \
+                "Unexpected return type from '%s' method ", \
+                (METH)); \
+    } \
+    while(0)
+#define RAISE_NO_MANDATORY_METHOD(OBJ, METH) \
+    do \
+    { \
+        saveLocation((OBJ), (METH)); \
+        RAISE_NAME_ERROR((OBJ), "No mandatory method '%s' found", (METH)); \
+    } \
+    while(0)
+#define CHECK_OUT_OF_RANGE(N, METH) \
+    do \
+    { \
+        if((N) < 0 || (N) > INT_MAX) \
+        { \
+            RAISE_OVERFLOW_ERROR( \
+                    pObject, \
+                    "Method '%s' returned out of range number", \
+                    (METH)); \
+            rc = BMN_CB_RESULT_UNEXPECTED_RETURNS; \
+        } \
+        else \
+        { \
+            rc = (int)(N); \
+        } \
+    } \
+    while(0)
 
 extern PyObject* pysqlite_DatabaseError;
 extern PyObject* pysqlite_OperationalError;
@@ -56,17 +75,15 @@ static int testPyExceptionDebug(
         const char* zFunction,
         int nLine)
 {
-    int err;
-    const char* zError;
-    err    = 0;
-    zError = NULL;
-    err    = tracePyException(object, zAttribute, &zError);
-    if(zError)
+    const char* zError = NULL;
+    int err = tracePyException(object, zAttribute, &zError);
+    if(zError != NULL)
     {
         bmnPrintf(zFile, nLine, zFunction, 1, "PY Exception: %s", zError);
     }
     return err;
 }
+
 #    define BMN_CATCH_PY_EXCEPTION(OBJ, ATTR) \
         testPyExceptionDebug( \
                 (OBJ), \
@@ -81,7 +98,7 @@ static int tracePyException(
         const char* zMethodName,
         const char** pErrorString)
 {
-    int rc;
+    int rc = 0;
     PyObject* pExcType;
     PyObject* pExcValue;
     PyObject* pExcTraceback;
@@ -90,7 +107,6 @@ static int tracePyException(
     const char* zExcStrValue;
 
     BMN_ASSERT(PyErr_Occurred());
-    rc = 0;
     PyErr_Fetch(&pExcType, &pExcValue, &pExcTraceback);
     PyErr_NormalizeException(&pExcType, &pExcValue, &pExcTraceback);
     pExcStrValue = PyObject_Repr(pExcValue);
@@ -205,14 +221,14 @@ extern int callOpenMethod(
 {
     BMN_TRACE_MARK;
     int rc;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     PyObject* pResult;
     _Py_IDENTIFIER(open);
 
     rc = SQLITE_OK;
     BMN_ASSERT(pFile);
     pFile->pBuffer = NULL;
-    gilstate       = PyGILState_Ensure();
+    gilState       = PyGILState_Ensure();
     pResult =
             _PyObject_CallMethodId(pObject, &PyId_open, "sI", zFilename, flags);
 
@@ -303,7 +319,7 @@ extern int callOpenMethod(
         pResult             = NULL;
         pFile->pFileWrapper = NULL;
     }
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     BMN_ASSERT(rc ^ (NULL != pFile->pFileWrapper));
 
     BMN_VERBOSE(
@@ -318,14 +334,14 @@ extern int callCloseMethod(PyObject* pObject, BmnvfsFile* pFile)
 {
     BMN_TRACE_MARK;
     int rc;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     PyObject* pResult;
     _Py_IDENTIFIER(close);
 
     rc = SQLITE_OK;
     BMN_ASSERT(pFile);
     BMN_ASSERT(pFile->pFileWrapper);
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
     pResult  = _PyObject_CallMethodId(
             pObject,
             &PyId_close,
@@ -358,7 +374,7 @@ extern int callCloseMethod(PyObject* pObject, BmnvfsFile* pFile)
     pFile->pFileWrapper = NULL;
     BMN_MEM_FREE(pFile->pBuffer);
     pFile->pBuffer = NULL;
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     return rc;
 }
 
@@ -370,13 +386,13 @@ extern int callFullPathname(
 {
     BMN_TRACE_MARK;
     int rc;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     PyObject* pResult;
     Py_ssize_t nLength;
 
     _Py_IDENTIFIER(full_pathname);
     rc       = SQLITE_OK;
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
 
     BMN_VERBOSE("input: %s out: %d", zFilename, nOut);
     pResult = _PyObject_CallMethodId(
@@ -418,7 +434,8 @@ extern int callFullPathname(
                     */
                     RAISE_OVERFLOW_ERROR(
                             pObject,
-                            "String returned by method 'full_pathname' longer than expected.");
+                            "String returned by method 'full_pathname' longer "
+                            "than expected.");
                     rc = SQLITE_CANTOPEN;
                 }
             }
@@ -426,7 +443,8 @@ extern int callFullPathname(
             {
                 // utf8 - fail
                 BMN_ERROR(
-                        "Impossible convert result of method 'full_pathname' to utf8.");
+                        "Impossible convert result of method 'full_pathname' "
+                        "to utf8.");
                 rc = BMN_CB_RESULT_UNEXPECTED_RETURNS;
             }
         }
@@ -458,7 +476,7 @@ extern int callFullPathname(
             rc = BMN_CB_RESULT_HANDLER_LOGIC_ERROR;
         }
     }
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     BMN_VERBOSE_ERROR(rc);
     return rc;
 }
@@ -472,7 +490,7 @@ extern int callAccessMethod(
     BMN_TRACE_MARK;
     int rc;
     PyObject* pResult;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     _Py_IDENTIFIER(access);
 
     BMN_ASSERT(
@@ -480,7 +498,7 @@ extern int callAccessMethod(
             flags == SQLITE_ACCESS_READWRITE);
 
     rc       = SQLITE_OK;
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
     pResult =
             _PyObject_CallMethodId(pObject, &PyId_access, "s I", zPath, flags);
     if(pResult)
@@ -492,14 +510,7 @@ extern int callAccessMethod(
         }
         else if(PyBool_Check(pResult))
         {
-            if(Py_True == pResult)
-            {
-                *pResOut = 1;
-            }
-            else
-            {
-                *pResOut = 0;
-            }
+            *pResOut = pResult == Py_True ? 1 : 0;
         }
         else
         {
@@ -523,7 +534,7 @@ extern int callAccessMethod(
         }
     }
     BMN_VERBOSE_ERROR(rc);
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     return rc;
 }
 
@@ -531,13 +542,13 @@ extern int callDeleteMethod(PyObject* pObject, const char* zPath, int syncDir)
 {
     BMN_TRACE_MARK;
 
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     PyObject* pResult;
     int rc;
     _Py_IDENTIFIER(delete);
 
     rc       = SQLITE_OK;
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
     BMN_VERBOSE_IO("file to delete:%s", zPath);
     pResult = _PyObject_CallMethodId(
             pObject,
@@ -568,7 +579,7 @@ extern int callDeleteMethod(PyObject* pObject, const char* zPath, int syncDir)
             rc = BMN_CB_RESULT_HANDLER_LOGIC_ERROR;
         }
     }
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     return rc;
 }
 
@@ -631,7 +642,7 @@ int callReadMethod(
     }
     else
     {
-        RAISE_WRONG_RETURN_TYPE(vfsInfo->pWrapper, "read")
+        RAISE_WRONG_RETURN_TYPE(vfsInfo->pWrapper, "read");
         rc = BMN_CB_RESULT_UNEXPECTED_RETURNS;
     }
 
@@ -676,13 +687,12 @@ extern int callDeviceCharacteristicsMethod(PyObject* pObject, BmnvfsFile* pFile)
 {
     BMN_TRACE_MARK;
     BMN_ASSERT(pFile->pFileWrapper);
-    int rc;
-    PyGILState_STATE gilstate;
+    int rc = SQLITE_DEFAULT_DEVICE_CHARACTERISTICS;
+    PyGILState_STATE gilState;
     PyObject* pResult;
     _Py_IDENTIFIER(device_characteristics);
 
-    rc       = SQLITE_DEFAULT_DEVICE_CHARACTERISTICS;
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
     pResult  = _PyObject_CallMethodId(
             pObject,
             &PyId_device_characteristics,
@@ -697,7 +707,8 @@ extern int callDeviceCharacteristicsMethod(PyObject* pObject, BmnvfsFile* pFile)
             {
                 RAISE_OVERFLOW_ERROR(
                         pObject,
-                        "Method 'device_characteristics' returned out of range number");
+                        "Method 'device_characteristics' returned out of range "
+                        "number");
                 rc = BMN_CB_RESULT_UNEXPECTED_RETURNS;
             }
         }
@@ -726,7 +737,7 @@ extern int callDeviceCharacteristicsMethod(PyObject* pObject, BmnvfsFile* pFile)
             rc = BMN_CB_RESULT_HANDLER_LOGIC_ERROR;
         }
     }
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     return rc;
 }
 
@@ -737,12 +748,12 @@ extern int callFileTruncateMethod(
 {
     BMN_TRACE_MARK;
 
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     PyObject* pResult;
     int rc;
     _Py_IDENTIFIER(truncate);
 
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
     rc       = SQLITE_OK;
 #if BMN_DEBUG_FILENAME_CONTROL
     BMN_VERBOSE_IO("truncate %s to %d", pFile->zFName, iSize);
@@ -775,7 +786,7 @@ extern int callFileTruncateMethod(
             rc = BMN_CB_RESULT_HANDLER_LOGIC_ERROR;
         }
     }
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     BMN_TRACE_ERROR(rc);
     return rc;
 }
@@ -788,12 +799,12 @@ extern int callFileSizeMethod(
     BMN_TRACE_MARK;
 
     int rc;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     PyObject* pResult;
     _Py_IDENTIFIER(file_size);
 
     rc       = SQLITE_OK;
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
     pResult  = _PyObject_CallMethodId(
             pObject,
             &PyId_file_size,
@@ -832,7 +843,7 @@ extern int callFileSizeMethod(
             rc = BMN_CB_RESULT_HANDLER_LOGIC_ERROR;
         }
     }
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     BMN_VERBOSE_IO("File size %lld", *pSize);
     BMN_VERBOSE_ERROR(rc);
     return rc;
@@ -843,13 +854,13 @@ extern int callSyncMethod(PyObject* pObject, BmnvfsFile* pFile, int flags)
     BMN_TRACE_MARK;
 
     int rc;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     PyObject* pResult;
     _Py_IDENTIFIER(sync);
 
     rc = SQLITE_OK;
     BMN_ASSERT(pFile->pFileWrapper);
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
     pResult  = _PyObject_CallMethodId(
             pObject,
             &PyId_sync,
@@ -879,7 +890,7 @@ extern int callSyncMethod(PyObject* pObject, BmnvfsFile* pFile, int flags)
             rc = BMN_CB_RESULT_HANDLER_LOGIC_ERROR;
         }
     }
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     return rc;
 }
 
@@ -888,12 +899,12 @@ extern int callSectorSizeMethod(PyObject* pObject, BmnvfsFile* pFile)
     BMN_TRACE_MARK;
 
     int rc;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     PyObject* pResult;
     _Py_IDENTIFIER(sector_size);
 
     rc       = SQLITE_OK;
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
     pResult  = _PyObject_CallMethodId(
             pObject,
             &PyId_sector_size,
@@ -915,8 +926,8 @@ extern int callSectorSizeMethod(PyObject* pObject, BmnvfsFile* pFile)
         }
         else if(Py_None == pResult)
         {
-            // don't raise anything cause it is normal and comfortable behavior
-            // for
+            // don't raise anything because it is normal and comfortable
+            // behavior for
             rc = BMN_CB_RESULT_NO_HANDLER;
         }
         else
@@ -941,7 +952,7 @@ extern int callSectorSizeMethod(PyObject* pObject, BmnvfsFile* pFile)
         }
     }
     BMN_VERBOSE_ERROR(rc);
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     return rc;
 }
 
@@ -950,13 +961,13 @@ extern int callRandomnessMethod(PyObject* pObject, int nByte, char* zByte)
     BMN_TRACE_MARK;
 
     int rc;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     PyObject* pResult;
     Py_ssize_t iResultLen;
     _Py_IDENTIFIER(random);
 
     rc       = BMN_CB_RESULT_NO_HANDLER;
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
     pResult  = _PyObject_CallMethodId(pObject, &PyId_random, "I", nByte);
     if(pResult)
     {
@@ -980,7 +991,8 @@ extern int callRandomnessMethod(PyObject* pObject, int nByte, char* zByte)
                 RAISE_VALUE_ERROR(
                         pObject,
                         "random",
-                        "Unexpected bytes length returned from 'random' method");
+                        "Unexpected bytes length returned from 'random' "
+                        "method.");
                 rc = BMN_CB_RESULT_UNEXPECTED_RETURNS;
             }
         }
@@ -1005,7 +1017,7 @@ extern int callRandomnessMethod(PyObject* pObject, int nByte, char* zByte)
             rc = BMN_CB_RESULT_HANDLER_LOGIC_ERROR;
         }
     }
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     return rc;
 }
 
@@ -1020,7 +1032,7 @@ extern int callFileControlMethod(
   but we need to process this stuff anyway
   */
     int rc;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     PyObject* pResult;
     _Py_IDENTIFIER(file_control);
 
@@ -1051,7 +1063,7 @@ used by VACUUM operations.
                 *(sqlite3_int64*)pArg);
 
         // rc = BMN_CALLBACK_ERROR;
-        gilstate = PyGILState_Ensure();
+        gilState = PyGILState_Ensure();
         pResult  = _PyObject_CallMethodId(
                 pObject,
                 &PyId_file_control,
@@ -1097,7 +1109,7 @@ used by VACUUM operations.
                 rc = BMN_CB_RESULT_HANDLER_LOGIC_ERROR;
             }
         }
-        PyGILState_Release(gilstate);
+        PyGILState_Release(gilState);
         break;
     case SQLITE_FCNTL_BUSYHANDLER:
         /* 15
@@ -1186,12 +1198,12 @@ extern int callSleepMethod(PyObject* pObject, int nMicro)
     BMN_TRACE_MARK;
 
     int rc, ec;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     PyObject* pResult;
     _Py_IDENTIFIER(sleep);
 
     rc       = BMN_CB_RESULT_NO_HANDLER;
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
     pResult  = _PyObject_CallMethodId(pObject, &PyId_sleep, "I", nMicro);
     if(pResult)
     {
@@ -1208,7 +1220,7 @@ extern int callSleepMethod(PyObject* pObject, int nMicro)
     {
         rc = BMN_CB_RESULT_HANDLER_LOGIC_ERROR;
     }
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     return rc;
 }
 #endif
@@ -1233,12 +1245,12 @@ extern int callGetCurrentTime(PyObject* pObject, double* fTime)
     BMN_TRACE_MARK;
 
     int rc;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     PyObject* pResult;
     _Py_IDENTIFIER(current_time);
 
     rc       = BMN_CB_RESULT_NO_HANDLER;
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
     pResult  = _PyObject_CallMethodId(pObject, &PyId_current_time, NULL);
     if(pResult)
     {
@@ -1271,7 +1283,7 @@ extern int callGetCurrentTime(PyObject* pObject, double* fTime)
             rc = BMN_CB_RESULT_HANDLER_LOGIC_ERROR;
         }
     }
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     return rc;
 }
 
@@ -1279,12 +1291,12 @@ extern int callGetCurrentTimeInt64(PyObject* pObject, sqlite3_int64* pTime)
 {
     BMN_TRACE_MARK;
     int rc;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     PyObject* pResult;
     _Py_IDENTIFIER(current_time_int64);
 
     rc       = BMN_CB_RESULT_NO_HANDLER;
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
     pResult  = _PyObject_CallMethodId(pObject, &PyId_current_time_int64, NULL);
     if(pResult)
     {
@@ -1323,7 +1335,7 @@ extern int callGetCurrentTimeInt64(PyObject* pObject, sqlite3_int64* pTime)
             rc = BMN_CB_RESULT_HANDLER_LOGIC_ERROR;
         }
     }
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     return rc;
 }
 
@@ -1412,9 +1424,12 @@ static PyObject* rawWriteImpl(PyObject* obj, PyObject* args)
             PyErr_SetString(pysqlite_OperationalError, "Disk is full");
             break;
         default:
-            RAISE_WRAPPER_ERROR(NULL, "Unexpected Write failure. Code:(%d)", rc)
+            RAISE_WRAPPER_ERROR(
+                    NULL,
+                    "Unexpected Write failure. Code:(%d)",
+                    rc);
             break;
-        };
+        }
         return NULL;
     }
     Py_RETURN_NONE;
@@ -1491,7 +1506,7 @@ extern int callEncodeMethod(
     PyObject* pResult;
     PyObject* pFunc;
     PyMethodDef pyMethodDef;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     _Py_IDENTIFIER(encode);
 
     pyMethodDef.ml_name  = "";
@@ -1502,9 +1517,8 @@ extern int callEncodeMethod(
 #if BMN_DEBUG_FILENAME_CONTROL
     BMN_VERBOSE_IO("shared file to write:%s", pFile->zFName);
 #endif
-    rc = SQLITE_OK;
-    ;
-    gilstate = PyGILState_Ensure();
+    rc       = SQLITE_OK;
+    gilState = PyGILState_Ensure();
     pFunc    = PyCFunction_New(&pyMethodDef, NULL);
 
     pResult = _PyObject_CallMethodId(
@@ -1519,7 +1533,7 @@ extern int callEncodeMethod(
 
     if(pResult)
     {
-        // we don't need and expect any results here but we have to inform user
+        // we don't need and expect any results here, but we have to inform user
         if(Py_None != pResult)
         {
             EMIT_RESULT_IGNORED_WARNING("encode");
@@ -1543,7 +1557,7 @@ extern int callEncodeMethod(
     }
     // Py_DECREF(pFunc);
     Py_CLEAR(pFunc);
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     return rc;
 }
 
@@ -1555,7 +1569,7 @@ extern int callDecodeMethod(
 {
     BMN_TRACE_MARK;
     int rc;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     PyObject* pResult;
     PyObject* pFunc;
     _Py_IDENTIFIER(decode);
@@ -1571,7 +1585,7 @@ extern int callDecodeMethod(
     BMN_VERBOSE_IO("shared file to read:%s", pFile->zFName);
 #endif
     rc       = SQLITE_OK;
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
     pFunc    = PyCFunction_New(&pyMethodDef, NULL);
 
     pResult = _PyObject_CallMethodId(
@@ -1651,6 +1665,6 @@ extern int callDecodeMethod(
         }
     }
     Py_DECREF(pFunc);
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     return rc;
 }

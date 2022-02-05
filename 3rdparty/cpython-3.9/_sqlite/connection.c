@@ -900,9 +900,9 @@ static int _authorizer_callback(void* user_arg, int action, const char* arg1, co
 {
     PyObject *ret;
     int rc;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
 
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
 
     ret = PyObject_CallFunction((PyObject*)user_arg, "issss", action, arg1, arg2, dbname, access_attempt_source);
 
@@ -931,7 +931,7 @@ static int _authorizer_callback(void* user_arg, int action, const char* arg1, co
         Py_DECREF(ret);
     }
 
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     return rc;
 }
 
@@ -939,9 +939,9 @@ static int _progress_handler(void* user_arg)
 {
     int rc;
     PyObject *ret;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
 
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
     ret = _PyObject_CallNoArg((PyObject*)user_arg);
 
     if (!ret) {
@@ -958,7 +958,7 @@ static int _progress_handler(void* user_arg)
         Py_DECREF(ret);
     }
 
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     return rc;
 }
 
@@ -967,9 +967,9 @@ static void _trace_callback(void* user_arg, const char* statement_string)
     PyObject *py_statement = NULL;
     PyObject *ret = NULL;
 
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
 
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
     py_statement = PyUnicode_DecodeUTF8(statement_string,
             strlen(statement_string), "replace");
     if (py_statement) {
@@ -987,7 +987,7 @@ static void _trace_callback(void* user_arg, const char* statement_string)
         }
     }
 
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
 }
 
 static PyObject* pysqlite_connection_set_authorizer(pysqlite_Connection* self, PyObject* args, PyObject* kwargs)
@@ -1372,11 +1372,11 @@ pysqlite_collation_callback(
     PyObject* callback = (PyObject*)context;
     PyObject* string1 = 0;
     PyObject* string2 = 0;
-    PyGILState_STATE gilstate;
+    PyGILState_STATE gilState;
     PyObject* retval = NULL;
     long longval;
     int result = 0;
-    gilstate = PyGILState_Ensure();
+    gilState = PyGILState_Ensure();
 
     if (PyErr_Occurred()) {
         goto finally;
@@ -1412,7 +1412,7 @@ finally:
     Py_XDECREF(string1);
     Py_XDECREF(string2);
     Py_XDECREF(retval);
-    PyGILState_Release(gilstate);
+    PyGILState_Release(gilState);
     return result;
 }
 
