@@ -13,7 +13,6 @@
     BMN_SQLITE_OFFSET - 2 /* wrong type returned */
 #define BMN_CB_RESULT_NO_HANDLER \
     BMN_SQLITE_OFFSET - 3 /* there is no callback */
-#define BMN_CB_RESULT_OK 0
 
 #define BMN_CALLBACK_ERROR \
     SQLITE_MISUSE /* what error we return to be handled by pysqlite correctly \
@@ -144,7 +143,6 @@ hahdle short read with Bool or None
 /*
     wrapper state  flags
 */
-#define BMN_DEFAULT_VFS                        1 << 0 // reserved
 #define BMN_NO_CALLBACK_OPEN                   1 << 1
 #define BMN_NO_CALLBACK_ACCESS                 1 << 2
 #define BMN_NO_CALLBACK_DELETE                 1 << 3
@@ -161,14 +159,6 @@ hahdle short read with Bool or None
 #    define BMN_READ_REAL_WORK \
         1 << 10 /* it means read/decode hasn't returned short read error */
 #endif
-
-/*
-  wrappper check result code
-*/
-#define BMN_WRAPPER_CHECK_RESULT_OK           0
-#define BMN_WRAPPER_CHECK_RESULT_ERROR_PASS   1
-#define BMN_WRAPPER_CHECK_RESULT_ERROR_RAISED 2
-#define BMN_WRAPPER_CHECK_RESULT_NONE_WRAPPER 3
 
 #define RAISE_ERROR(EXC, OBJ, ...) \
     BMN_ERROR(__VA_ARGS__); \
@@ -191,21 +181,12 @@ hahdle short read with Bool or None
 #define RAISE_NAME_ERROR(OBJ, ...) \
     RAISE_ERROR(PyExc_NameError, (OBJ), __VA_ARGS__)
 
-#define RAISE_NOT_IMPLEMENTED_ERROR(OBJ, ...) \
-    RAISE_ERROR(PyExc_NotImplementedError, (OBJ), __VA_ARGS__)
-
 #define RAISE_WRAPPER_ERROR(OBJ, ...) \
     RAISE_ERROR(pysqlite_WrapperError, (OBJ), __VA_ARGS__)
 
-typedef struct BmnvfsHolder BmnvfsHolder;
 typedef struct BmnvfsFile BmnvfsFile;
 typedef struct BmnvfsInfo BmnvfsInfo;
 typedef struct BmnvfsNode BmnvfsNode;
-
-struct BmnvfsHolder
-{
-    int iFileSize;
-};
 
 struct BmnvfsNode
 {

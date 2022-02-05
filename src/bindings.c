@@ -9,8 +9,6 @@
 #define BMN_FILE_NOT_FOUND        BMN_CALLBACK_ERROR_OFFSET + 2
 #define BMN_OS_ERROR              BMN_CALLBACK_ERROR_OFFSET + 3
 
-#define EMIT_WRAPPER_WARNING(MSG) \
-    PyErr_WarnEx(pysqlite_WrapperWarning, (MSG), 0);
 #define EMIT_WRAPPER_WARNING_FMT(...) \
     PyErr_WarnFormat(pysqlite_WrapperWarning, 0, __VA_ARGS__)
 #define EMIT_RESULT_IGNORED_WARNING(METH) \
@@ -21,9 +19,6 @@
 #define RAISE_WRONG_RETURN_TYPE(OBJ, METH) \
     saveLocation((OBJ), (METH)); \
     RAISE_TYPE_ERROR((OBJ), "Unexpected return type from '%s' method ", (METH))
-#define RAISE_WRONG_RETURN_VALUE(OBJ, METH) \
-    saveLocation((OBJ), (METH)); \
-    RAISE_VALUE_ERROR((OBJ), "Unexpected return value from '%s' method", (METH))
 #define RAISE_NO_MANDATORY_METHOD(OBJ, METH) \
     saveLocation((OBJ), (METH)); \
     RAISE_NAME_ERROR((OBJ), "No mandatory method '%s' found", (METH))
@@ -42,7 +37,6 @@
     }
 
 extern PyObject* pysqlite_DatabaseError;
-extern PyObject* pysqlite_OperationalError;
 extern PyObject* pysqlite_OperationalError;
 extern PyObject* pysqlite_WrapperError;
 extern PyObject* pysqlite_WrapperWarning;

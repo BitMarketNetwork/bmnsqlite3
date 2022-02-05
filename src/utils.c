@@ -2,7 +2,6 @@
 
 #include "debug.h"
 
-BmnvfsHolder vfsHolder;
 extern PyObject* pysqlite_WrapperError;
 extern PyObject* pysqlite_DatabaseError;
 

@@ -16,7 +16,6 @@ log = logging.getLogger(__name__)
 @unittest.skipIf(not hasattr(bmnsqlite3,"flags") , "Debugging API required for this test")
 class FlagsTestCase(SqlCheckTestCase):
     scope = "flags"
-    BMN_DEFAULT_VFS = 1 << 0
     BMN_NO_CALLBACK_OPEN = 1 << 1
     BMN_NO_CALLBACK_ACCESS = 1 << 2
     BMN_NO_CALLBACK_DELETE = 1 << 3
@@ -114,7 +113,7 @@ class FlagsTestCase(SqlCheckTestCase):
 
     @unittest.skip("TODO")
     def test_random(self) -> None:
-        
+
         class NoRandom(abstract.IDeleteMixin, minimal.MinimalFullWrapper):
 
             def random(self, size: int) -> Optional[bytes]:
