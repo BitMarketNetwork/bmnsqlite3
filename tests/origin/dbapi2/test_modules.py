@@ -1,4 +1,5 @@
 import sys
+import time
 from distutils.errors import DistutilsError
 from pathlib import Path
 
@@ -8,11 +9,34 @@ import bmnsqlite3
 from tests.origin import BmnTestCase
 
 
-class ModuleTests(BmnTestCase):
-    def test_dbapi2_exports(self) -> None:
+class TestModule(BmnTestCase):
+    def test_dbapi2_globals(self) -> None:
         self.assertEqual("2.0", getattr(bmnsqlite3, "apilevel", None))
         self.assertEqual(1, getattr(bmnsqlite3, "threadsafety", None))
         self.assertEqual("qmark", getattr(bmnsqlite3, "paramstyle", None))
+
+    def test_dbapi2_date_time(self) -> None:
+        ticks = 7 * 24 * 60 * 60 - 2
+        if not time.localtime().tm_isdst:
+            ticks += time.timezone
+        else:
+            ticks += time.altzone
+
+        self.assertEqual(1970, bmnsqlite3.DateFromTicks(ticks).year)
+        self.assertEqual(1, bmnsqlite3.DateFromTicks(ticks).month)
+        self.assertEqual(7, bmnsqlite3.DateFromTicks(ticks).day)
+        self.assertEqual(23, bmnsqlite3.TimeFromTicks(ticks).hour)
+        self.assertEqual(59, bmnsqlite3.TimeFromTicks(ticks).minute)
+        self.assertEqual(58, bmnsqlite3.TimeFromTicks(ticks).second)
+        self.assertEqual(0, bmnsqlite3.TimeFromTicks(ticks).microsecond)
+
+        self.assertEqual(1970, bmnsqlite3.TimestampFromTicks(ticks).year)
+        self.assertEqual(1, bmnsqlite3.TimestampFromTicks(ticks).month)
+        self.assertEqual(7, bmnsqlite3.TimestampFromTicks(ticks).day)
+        self.assertEqual(23, bmnsqlite3.TimestampFromTicks(ticks).hour)
+        self.assertEqual(59, bmnsqlite3.TimestampFromTicks(ticks).minute)
+        self.assertEqual(58, bmnsqlite3.TimestampFromTicks(ticks).second)
+        self.assertEqual(0, bmnsqlite3.TimestampFromTicks(ticks).microsecond)
 
         self.assertTrue(hasattr(bmnsqlite3, "Binary"))
         self.assertTrue(hasattr(bmnsqlite3, "STRING"))
@@ -24,6 +48,7 @@ class ModuleTests(BmnTestCase):
     def test_dbapi2_exceptions(self) -> None:
         self.assertTrue(issubclass(bmnsqlite3.Warning, Exception))
         self.assertTrue(issubclass(bmnsqlite3.Error, Exception))
+
         if True:
             self.assertTrue(issubclass(
                 bmnsqlite3.InterfaceError,
@@ -31,6 +56,7 @@ class ModuleTests(BmnTestCase):
             self.assertTrue(issubclass(
                 bmnsqlite3.DatabaseError,
                 bmnsqlite3.Error))
+
             if True:
                 self.assertTrue(issubclass(
                     bmnsqlite3.DataError,
@@ -61,9 +87,9 @@ class ModuleTests(BmnTestCase):
         # sync with README.md / 3rdparty
         version_map = {
             # python_version: sqlite_version
-            (3,  7): (3, 21, 0),
-            (3,  8): (3, 28, 0),
-            (3,  9): (3, 32, 3),
+            (3, 7): (3, 21, 0),
+            (3, 8): (3, 28, 0),
+            (3, 9): (3, 32, 3),
             (3, 10): (3, 34, 0),
         }
         python_version = sys.version_info[:2]
@@ -74,7 +100,7 @@ class ModuleTests(BmnTestCase):
 
         try:
             setup_config = Path(__file__)
-            for _ in range(4):  # stupid
+            for _ in range(4):
                 setup_config = setup_config.parent
                 self.assertTrue(setup_config.exists())
             setup_config /= "setup.cfg"

@@ -1,7 +1,7 @@
 # https://www.python.org/dev/peps/pep-0249/
+import collections.abc
 import datetime
 import time
-import collections.abc
 
 from _bmnsqlite3 import *
 
@@ -9,7 +9,7 @@ from _bmnsqlite3 import *
 apilevel = "2.0"
 
 # Integer constant stating the level of thread safety the interface supports.
-threadsafety = 1
+threadsafety = 1  # Threads may share the module, but not connections.
 
 # String constant stating the type of parameter marker formatting expected by
 # the interface.
