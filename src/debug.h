@@ -1,6 +1,4 @@
-
-#ifndef BMN_DEBUG_H
-#define BMN_DEBUG_H
+#pragma once
 
 #ifdef NDEBUG
 #    define BMN_TRACE(...)           (void)0;
@@ -189,5 +187,4 @@ int bmnPrintErrCode(
 #    define BMN_REFCOUNT(OBJ) (int)Py_REFCNT(OBJ)
 #    define BMN_ASSERT_REFCOUNT(OBJ, COUNT) \
         BMN_ASSERT_EQUAL(BMN_REFCOUNT(OBJ), (COUNT))
-#endif
 #endif

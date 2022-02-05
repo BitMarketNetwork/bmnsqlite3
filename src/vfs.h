@@ -1,13 +1,11 @@
-
 /* io.h - definitions for the io wrapper type
  *
  * Copyright(C) 2021-2021 meth
  */
 
-#ifndef BMNSQLITE_VFS_H
-#define BMNSQLITE_VFS_H
-#define PY_SSIZE_T_CLEAN
-#include <Python.h>
+#pragma once
+#include "module.h"
+
 #include "utils.h"
 
 /*
@@ -20,6 +18,4 @@ PyObject* bmnFindVfs(const char* zVfsName);
 #if REGISTER_DEBUG_ITEMS
 PyObject* bmnConnectionCount();
 PyObject* bmnFlags();
-#endif
-
 #endif

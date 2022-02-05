@@ -1,10 +1,6 @@
+#pragma once
+#include "module.h"
 
-
-#ifndef BMN_BINDINGS_H
-#define BMN_BINDINGS_H
-// https://docs.python.org/3/c-api/intro.html#include-files
-#define PY_SSIZE_T_CLEAN
-#include <Python.h>
 #include "sqlite3.h"
 
 // forward
@@ -102,5 +98,3 @@ int callDecodeMethod(
         char* zBuf,
         Py_ssize_t iAmt,
         sqlite3_int64 iOfst);
-
-#endif

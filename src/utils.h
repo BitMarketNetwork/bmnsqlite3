@@ -1,6 +1,6 @@
-#ifndef BMN_UTILS_H
-#define BMN_UTILS_H
-#include "Python.h"
+#pragma once
+#include "module.h"
+
 #include "sqlite3.h"
 
 #define BMN_SQLITE_OFFSET \
@@ -267,5 +267,3 @@ int checkWrapperObject(PyObject* pObject);
 void saveLocation(PyObject* pObject, const char* zLocation);
 
 int initPyModule();
-
-#endif
