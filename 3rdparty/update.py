@@ -161,13 +161,13 @@ def cpython_copy(output_path: Path) -> None:
         copy_function=copy_verbose)
     shutil.copytree(
         CPYTHON_DIR / "Lib" / "sqlite3" / "test",
-        output_path / "test",
+        output_path / "sqlite3test",
         copy_function=copy_verbose_tests)
     shutil.copytree(
         CPYTHON_DIR / "Lib" / "test" / "support",
-        output_path / "test" / "test" / "support",
+        output_path / "test" / "support",
         copy_function=copy_verbose)
-    open(output_path / "test" / "test" / "__init__.py", "w").close()
+    open(output_path / "test" / "__init__.py", "w").close()
 
     for py_file in glob.iglob(
             "**/*.py",

@@ -60,7 +60,7 @@ If you want to use the package in "Debug Mode", set the environment variable
 - **Run tests**:
 
   ```shell
-  $ python3 -m tox
+  $ python3 -m tox --skip-missing-interpreters true
   ```
 
 - **Build sdist package**:
