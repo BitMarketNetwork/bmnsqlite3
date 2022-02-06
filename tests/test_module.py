@@ -87,10 +87,10 @@ class TestModule(BmnTestCase):
         # sync with README.md / 3rdparty
         version_map = {
             # python_version: sqlite_version
-            (3, 7): (3, 21, 0),
-            (3, 8): (3, 28, 0),
-            (3, 9): (3, 32, 3),
-            (3, 10): (3, 34, 0),
+            (3, 7): (3, 37, 2),
+            (3, 8): (3, 37, 2),
+            (3, 9): (3, 37, 2),
+            (3, 10): (3, 37, 2),
         }
         python_version = sys.version_info[:2]
         self.assertTrue(python_version in version_map)
@@ -100,7 +100,7 @@ class TestModule(BmnTestCase):
 
         try:
             setup_config = Path(__file__)
-            for _ in range(4):
+            for _ in range(2):
                 setup_config = setup_config.parent
                 self.assertTrue(setup_config.exists())
             setup_config /= "setup.cfg"
