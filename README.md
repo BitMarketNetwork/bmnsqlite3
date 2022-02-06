@@ -36,6 +36,15 @@ If you want to use the package in "Debug Mode", set the environment variable
   $ cd bmnslite3
   ```
 
+- **Copy _sqlite/sqlite3 modules from CPython repository**:
+
+  This tool automatically clones the CPython repository and copies the required
+  files for each supported version of Python.
+
+  ```shell
+  $ python3 ./3rdparty/update.py
+  ```
+
 - **Install in editable mode ("develop mode")**:
 
   ```shell
@@ -75,9 +84,9 @@ If you want to use the package in "Debug Mode", set the environment variable
 
 # SQLite Version Map
 
-| Python version | CPython version | SQLite version |
-|----------------|-----------------|----------------|
-| 3.7            | 3.7.0           | 3.21.0         |
-| 3.8            | 3.8.2           | 3.28.0         |
-| 3.9            | 3.9.2           | 3.32.3         |
-| 3.10           | v3.10.0a6       | 3.34.0         |
+| Python version | CPython tag | SQLite version |
+|:---------------|:------------|:---------------|
+| 3.10           | v3.10.2     | 3.37.2         |
+| 3.7            | v3.7.12     | 3.37.2         |
+| 3.8            | v3.8.12     | 3.37.2         |
+| 3.9            | v3.9.10     | 3.37.2         |

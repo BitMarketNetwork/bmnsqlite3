@@ -21,15 +21,16 @@ PLATFORM_IS_DARWIN: Final = sys.platform.startswith("darwin")
 PLATFORM_IS_LINUX: Final = sys.platform.startswith("linux")
 
 # Paths
-THIRD_PARTY_PATH: Final = \
-    Path(".") \
-    / "3rdparty" \
-    / f"cpython-{sys.version_info.major}.{sys.version_info.minor}"
-PYSQLITE3_PATH: Final = THIRD_PARTY_PATH / "_sqlite"
-SQLITE3_PATH: Final = THIRD_PARTY_PATH / "sqlite"
-SOURCE_PATH: Final = Path(".") / "src"
+PACKAGE_PATH: Final = Path(".")
+CPYTHON_PATH: Final = (
+        PACKAGE_PATH
+        / "3rdparty"
+        / f"cpython-{sys.version_info.major}.{sys.version_info.minor}")
+PYSQLITE_PATH: Final = CPYTHON_PATH / "_sqlite"
+SQLITE_PATH: Final = PACKAGE_PATH / "3rdparty" / "sqlite"
+SOURCE_PATH: Final = PACKAGE_PATH / "src"
 
-if not PYSQLITE3_PATH.exists():
+if not PYSQLITE_PATH.exists():
     raise RuntimeError(
         "current version {}.{}.{} of the Python is not supported"
         .format(*sys.version_info[:3]))
@@ -43,12 +44,12 @@ DEBUG_MODE: Final = True if int(os.getenv("BMN_DEBUG", 0)) else False
 
 
 def create_extension() -> setuptools.Extension:
-    include_list = [str(THIRD_PARTY_PATH), str(SQLITE3_PATH)]
+    include_list = [str(CPYTHON_PATH), str(SQLITE_PATH)]
     quote = '\"' if PLATFORM_IS_WINDOWS else '"'
 
     source_list = [
-        *PYSQLITE3_PATH.glob("*.c"),
-        *SQLITE3_PATH.glob("*.c"),
+        *PYSQLITE_PATH.glob("*.c"),
+        *SQLITE_PATH.glob("*.c"),
         *SOURCE_PATH.glob("*.c")
     ]
     source_list = list(map(str, source_list))
