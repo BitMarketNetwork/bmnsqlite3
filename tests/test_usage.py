@@ -4,7 +4,7 @@ import unittest
 from typing import Any, Tuple, Union, Optional
 
 import bmnsqlite3
-from tests import SqlCheckTestCase, DbPathMixin, MS_WINDOWS
+from tests import SqlCheckTestCase, DbPathMixin
 from tests.wrappers import full, minimal, partial, crypto, abstract
 
 log = logging.getLogger(__name__)
@@ -246,7 +246,7 @@ class UriTestCase(SqlCheckTestCase):
         bmnsqlite3.connect(self.db_path(uri_format=True), uri=True)
 
         class UriWrapper2(minimal.MinimalFullWrapper):
-            
+
             def full_pathname(self, name: str, out: int) -> Optional[str]:
                 if name.startswith("/"):
                     return name[1:]

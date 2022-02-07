@@ -7,19 +7,23 @@ import sqlite3
 import unittest
 from contextlib import contextmanager
 from datetime import date, datetime
-from typing import Iterable, List, Optional
+from typing import Iterable, List, Optional, Final
+from tempfile import gettempdir
 
 import bmnsqlite3
 from tests.wrappers import testdata as td
 from tests import str_generator
+from pathlib import Path
 
 log = logging.getLogger(__name__)
 
-TEMP_DB_DIRECTORY = "tests/tmp"
+TEMP_DB_DIRECTORY: Final = (
+        Path(gettempdir())
+        / "{:s}-tests".format("bmnsqlite3"))  # TODO
 
 
 def get_db_path(db_name: str) -> pathlib.Path:
-    p = pathlib.Path(TEMP_DB_DIRECTORY).absolute()
+    p = TEMP_DB_DIRECTORY.absolute()
     p.mkdir(parents=True, exist_ok=True)
     return p / db_name
 

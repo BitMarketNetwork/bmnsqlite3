@@ -6,10 +6,10 @@ from pathlib import Path
 import setuptools.config
 
 import bmnsqlite3
-from tests.origin import BmnTestCase
+from unittest import TestCase
 
 
-class TestModule(BmnTestCase):
+class TestModule(TestCase):
     def test_dbapi2_globals(self) -> None:
         self.assertEqual("2.0", getattr(bmnsqlite3, "apilevel", None))
         self.assertEqual(1, getattr(bmnsqlite3, "threadsafety", None))

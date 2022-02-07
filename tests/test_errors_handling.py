@@ -4,7 +4,7 @@ import logging
 from typing import Any, Optional, Union, Callable
 
 import bmnsqlite3
-from tests import MS_WINDOWS, SqlCheckTestCase, TracebackHelper, UNRAISABLE_ARGS_TYPE
+from tests import SqlCheckTestCase, TracebackHelper, UNRAISABLE_ARGS_TYPE
 from tests.wrappers import partial, full
 from tests.wrappers.partial import DECODE_CALLBACK_SIGNATURE, ENCODE_CALLBACK_SIGNATURE
 
@@ -22,7 +22,6 @@ class ErrorsHandlingTestCase(SqlCheckTestCase):
         super().tearDown()
         self.erase_db()
 
-    @unittest.skipIf(not MS_WINDOWS, "TODO check it on unix")
     def test_bad_uri_parameter(self) -> None:
         bmnsqlite3.vfs_register(full.UselessWrapper(), make_default=True)
         with self.assertRaises(bmnsqlite3.OperationalError):

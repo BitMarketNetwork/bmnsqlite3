@@ -1,5 +1,5 @@
 import os
-from typing import Any, Optional, Union, Callable
+from typing import Any, Union, Callable
 
 from tests.wrappers import abstract
 

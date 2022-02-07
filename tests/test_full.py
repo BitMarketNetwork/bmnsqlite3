@@ -1,9 +1,8 @@
-from tests.wrappers import full, crypto, minimal
+from tests.wrappers import full, crypto
 import bmnsqlite3
 import logging
 import unittest
 import time
-from typing import Any, Optional
 
 log = logging.getLogger(__name__)
 
@@ -73,5 +72,5 @@ class VacuumTestCase(unittest.TestCase):
         start = time.time()
         crypto.ZipFastWrapper().test_vacuum(self)
         fast_zeros_duration = time.time() - start
-        # no profit ?? 
+        # no profit ??
         # self.assertGreater(zeros_duration,fast_zeros_duration )

@@ -1,13 +1,11 @@
 import unittest
 from typing import Union
 
-import bmnsqlite3
 from tests import UNRAISABLE_ARGS_TYPE, SqlCheckTestCase
 from tests.wrappers import abstract, minimal
 
 
 class OpenCloseTestCase(SqlCheckTestCase):
-
     def test_no_close(self):
         class NoClose(abstract.IOpenMixin):
             """

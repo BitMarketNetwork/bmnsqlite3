@@ -13,9 +13,6 @@ __pycache__
 .pypirc
 
 # TODO
-/tests/tmp
-/.vscode
-/.vs
 **/lib*
 *.obj
 *.pyd
@@ -25,12 +22,5 @@ __pycache__
 *.db*
 # unix
 *.o
-*.sql
 *.log
 *.tmp
-
-# from origin tests
-@test*
-
-# venv
-*.env*

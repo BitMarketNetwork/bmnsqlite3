@@ -1,11 +1,9 @@
 import abc
-from bmnsqlite3.dbapi2 import Date
 import logging
 import os
 import struct
 from typing import Any, Optional, Union
 
-from tests import randbytes
 from tests.wrappers import abstract
 from tests.wrappers import full
 
@@ -69,8 +67,8 @@ class IFixedLengthWrapper(ISectorWrapper, abstract.FillGapWithZerosMixin, abc.AB
     The must severe version where we must save length of the encrypted data  in the prefix
     We also use ratio to alloc more space to avoid rewrite previous sector
 
-    Fill gap with zeros here (see FillGapWithZerosMixin in MRO), but any other approach can be applied 
-    
+    Fill gap with zeros here (see FillGapWithZerosMixin in MRO), but any other approach can be applied
+
     Also pay attention this 'read' version works much faster because we avoid calling ptoentially much slower 'safe_decrypt'
     """
     RATIO = 2

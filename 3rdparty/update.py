@@ -14,7 +14,7 @@ from urllib.request import urlopen
 from zipfile import ZipFile
 
 if TYPE_CHECKING:
-    from typing import Final, Sequence, Dict, Tuple
+    from typing import Dict, Final, List, Sequence, Tuple
 
 WORK_DIR: Final = Path(__file__).parent
 
@@ -165,19 +165,27 @@ def cpython_copy(output_path: Path) -> None:
         copy_function=copy_verbose_tests)
     shutil.copytree(
         CPYTHON_DIR / "Lib" / "test" / "support",
-        output_path / "test" / "support",
+        output_path / "sqlite3test" / "test" / "support",
         copy_function=copy_verbose)
-    open(output_path / "test" / "__init__.py", "w").close()
+    open(output_path / "sqlite3test" / "test" / "__init__.py", "w").close()
 
     for py_file in glob.iglob(
             "**/*.py",
             root_dir=output_path,
             recursive=True):
-        with open(output_path / py_file, "rb") as f:
-            s = f.read().replace(b"sqlite3", b"bmnsqlite3")
-        with open(output_path / py_file, "wb") as f:
-            f.write(s)
-        del s
+        with open(output_path / py_file, "rt", errors="ignore") as f:
+            lines: List[str] = list(f.readlines())
+            for i in range(len(lines)):
+                line = lines[i]
+                offset = line.find("#")
+                if offset == -1:
+                    offset = len(line)
+                lines[i] = (
+                    line[:offset].replace("sqlite3", "bmnsqlite3")
+                    + line[offset:])
+        with open(output_path / py_file, "wt") as f:
+            f.writelines(lines)
+        del lines
 
 
 def sqlite_copy() -> None:
@@ -209,7 +217,6 @@ def sqlite_copy() -> None:
             with zip_file.open(file_info.filename) as zf:
                 with open(output_file, "wb") as f:
                     f.write(zf.read())
-                    f.flush()
 
 
 def main() -> int:

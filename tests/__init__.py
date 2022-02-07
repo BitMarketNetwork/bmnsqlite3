@@ -13,7 +13,6 @@ import bmnsqlite3
 log = logging.getLogger(__name__)
 
 UNRAISABLE_FULL_SUPPORT = sys.version_info >= (3, 8,)
-MS_WINDOWS = (sys.platform == 'win32')
 
 if UNRAISABLE_FULL_SUPPORT:
     UNRAISABLE_ARGS_TYPE = 'sys.UnraisableHookArgs'
@@ -22,16 +21,6 @@ else:
     Test coverage is not complete in this case
     """
     UNRAISABLE_ARGS_TYPE = Any
-
-
-def only_windows(fun):
-    return unittest.skipIf(not MS_WINDOWS, "Windows sqlite backend required")(fun)
-
-# TODO: silly impl
-
-
-def only_unix(fun):
-    return unittest.skipIf(MS_WINDOWS, "Unix sqlite backend required")(fun)
 
 
 class TracebackHelper:
@@ -119,7 +108,7 @@ class DbPathMixin(abc.ABC):
         removes all *.db files
         """
         from tests.wrappers.testcases import TEMP_DB_DIRECTORY
-        for file in pathlib.Path(TEMP_DB_DIRECTORY).absolute().glob("*.db"):
+        for file in TEMP_DB_DIRECTORY.absolute().glob("*.db"):
             file.unlink()
 
 
@@ -313,19 +302,3 @@ def str_generator(size: int, chars=string.ascii_uppercase + string.digits) -> st
 
 def randbytes(n: int) -> bytes:
     return bytes(map(random.getrandbits, (8,) * n))
-
-
-def gc_collect():
-    """Force as many objects as possible to be collected.
-
-    In non-CPython implementations of Python, this is needed because timely
-    deallocation is not guaranteed by the garbage collector.  (Even in CPython
-    this can be the case in case of reference cycles.)  This means that __del__
-    methods may be called later than expected and weakrefs may remain alive for
-    longer than expected.  This function tries its best to force all garbage
-    objects to disappear.
-    """
-    import gc
-    gc.collect()
-    gc.collect()
-    gc.collect()
